@@ -152,23 +152,25 @@ namespace MultiFaceRec
             //label4.Text = "";
             NamePersons.Add("");
 
-
             //Get the current frame form capture device
+            // lấy khung hình capture, truyền vào thuật toán tích phân bật 3
             currentFrame = grabber.QueryFrame().Resize(320, 240, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
 
-                    //Convert it to Grayscale
+                    //chuyển sang khung gray
                     gray = currentFrame.Convert<Gray, Byte>();
 
-                    //Face Detector
-                    MCvAvgComp[][] facesDetected = gray.DetectHaarCascade(
+            //nhận diện khuôn mặt
+            // DetectHaarCascade: xữ lý nhận diện khuôn mặt bằng khoảng cách: 2 mắt, mũi, ...
+            MCvAvgComp[][] facesDetected = gray.DetectHaarCascade(
                   face,
                   1.2,
                   10,
                   Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
                   new Size(20, 20));
 
-                    //Action for each element detected
-                    foreach (MCvAvgComp f in facesDetected[0])
+            //Action for each element detected
+            // facesDetected[]: lưu khuôn mặt đang có trên camera
+            foreach (MCvAvgComp f in facesDetected[0])
                     {
                         t = t + 1;
                         result = currentFrame.Copy(f.rect).Convert<Gray, byte>().Resize(100, 100, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
