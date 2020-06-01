@@ -1,6 +1,4 @@
-﻿using Emgu.CV;
-using Emgu.CV.Structure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,12 +9,16 @@ using System.Windows.Forms;
 
 namespace MultiFaceRec
 {
-    public partial class FrmInforRegister : Form
+    public partial class FrmPassword : Form
     {
-        public FrmInforRegister(Image<Gray, byte> image)
+        public FrmPassword()
         {
             InitializeComponent();
-            imageBox1.Image = image;
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

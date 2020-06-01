@@ -15,6 +15,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.CvEnum;
 using System.IO;
 using System.Diagnostics;
+using System.Threading;
 
 namespace MultiFaceRec
 {
@@ -33,7 +34,20 @@ namespace MultiFaceRec
         List<string> NamePersons = new List<string>();
         int ContTrain, NumLabels, t;
         string name, names = null;
+        bool isOn = false;
 
+        Thread thread;
+        private void FrmPrincipal_FormClosed(object sender, FormClosedEventArgs e)
+        {
+               
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            if (isOn)
+                grabber.Dispose();
+            this.Close();
+        }
 
         public FrmPrincipal()
         {
@@ -75,6 +89,7 @@ namespace MultiFaceRec
             //Initialize the FrameGraber event
             Application.Idle += new EventHandler(FrameGrabber);
             button1.Enabled = false;
+            isOn = true;
         }
 
 
@@ -202,7 +217,7 @@ namespace MultiFaceRec
                     //Clear the list(vector) of names
                     NamePersons.Clear();
 
-                }
+        }
 
     }
 }

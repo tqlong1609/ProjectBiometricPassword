@@ -71,11 +71,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EigenObjectRecognizer.cs" />
-    <Compile Include="FrmInforRegister.cs">
+    <Compile Include="FrmFaceLogin.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmInforRegister.Designer.cs">
-      <DependentUpon>FrmInforRegister.cs</DependentUpon>
+    <Compile Include="FrmFaceLogin.Designer.cs">
+      <DependentUpon>FrmFaceLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmInfor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmInfor.Designer.cs">
+      <DependentUpon>FrmInfor.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmLogin.cs">
       <SubType>Form</SubType>
@@ -83,11 +89,11 @@
     <Compile Include="FrmLogin.Designer.cs">
       <DependentUpon>FrmLogin.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmRegister.cs">
+    <Compile Include="FrmPassword.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmRegister.Designer.cs">
-      <DependentUpon>FrmRegister.cs</DependentUpon>
+    <Compile Include="FrmPassword.Designer.cs">
+      <DependentUpon>FrmPassword.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -97,14 +103,17 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FrmInforRegister.resx">
-      <DependentUpon>FrmInforRegister.cs</DependentUpon>
+    <EmbeddedResource Include="FrmFaceLogin.resx">
+      <DependentUpon>FrmFaceLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmInfor.resx">
+      <DependentUpon>FrmInfor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmLogin.resx">
       <DependentUpon>FrmLogin.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrmRegister.resx">
-      <DependentUpon>FrmRegister.cs</DependentUpon>
+    <EmbeddedResource Include="FrmPassword.resx">
+      <DependentUpon>FrmPassword.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

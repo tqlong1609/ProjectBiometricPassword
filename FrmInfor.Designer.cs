@@ -1,6 +1,6 @@
 ﻿namespace MultiFaceRec
 {
-    partial class FrmInforRegister
+    partial class FrmInfor
     {
         /// <summary>
         /// Required designer variable.
@@ -28,35 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.imageBox1 = new Emgu.CV.UI.ImageBox();
-            ((System.ComponentModel.ISupportInitialize)(this.imageBox1)).BeginInit();
+            this.btnExit = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // imageBox1
+            // btnExit
             // 
-            this.imageBox1.Location = new System.Drawing.Point(279, 12);
-            this.imageBox1.Name = "imageBox1";
-            this.imageBox1.Size = new System.Drawing.Size(278, 232);
-            this.imageBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.imageBox1.TabIndex = 6;
-            this.imageBox1.TabStop = false;
+            this.btnExit.Location = new System.Drawing.Point(342, 212);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(75, 23);
+            this.btnExit.TabIndex = 21;
+            this.btnExit.Text = "Exit";
+            this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
-            // FrmInforRegister
+            // FrmInfor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.imageBox1);
-            this.Name = "FrmInforRegister";
-            this.Text = "FrmInforRegister";
-            ((System.ComponentModel.ISupportInitialize)(this.imageBox1)).EndInit();
+            this.Controls.Add(this.btnExit);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "FrmInfor";
+            this.Text = "FrmInfor";
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private Emgu.CV.UI.ImageBox imageBox1;
+        private System.Windows.Forms.Button btnExit;
     }
 }
