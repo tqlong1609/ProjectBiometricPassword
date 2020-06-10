@@ -37,6 +37,8 @@ namespace MultiFaceRec
         bool isOn = false;
 
         Thread thread;
+        string password;
+        List<string> listPass = new List<string>();
         private void FrmPrincipal_FormClosed(object sender, FormClosedEventArgs e)
         {
                
@@ -68,7 +70,9 @@ namespace MultiFaceRec
                 {
                     LoadFaces = "face" + tf + ".bmp";
                     trainingImages.Add(new Image<Gray, byte>(Application.StartupPath + "/TrainedFaces/" + LoadFaces));
-                    labels.Add(Labels[tf]);
+                    string[] name = Labels[tf].Split('$');
+                    listPass.Add(name[1]);
+                    labels.Add(name[0]);
                 }
             
             }
@@ -95,53 +99,59 @@ namespace MultiFaceRec
 
         private void button2_Click(object sender, System.EventArgs e)
         {
-            try
+            if (txtPassword.Text.Equals("") || textBox1.Text.Equals(""))
+                MessageBox.Show("Enter full name and password", "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            else
             {
-                //Trained face counter
-                ContTrain = ContTrain + 1;
-
-                //Get a gray frame from capture device
-                gray = grabber.QueryGrayFrame().Resize(320, 240, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
-
-                //Face Detector
-                MCvAvgComp[][] facesDetected = gray.DetectHaarCascade(
-                face,
-                1.2,
-                10,
-                Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
-                new Size(20, 20));
-
-                //Action for each element detected
-                foreach (MCvAvgComp f in facesDetected[0])
+                try
                 {
-                    TrainedFace = currentFrame.Copy(f.rect).Convert<Gray, byte>();
-                    break;
+                    //Trained face counter
+                    ContTrain = ContTrain + 1;
+
+                    //Get a gray frame from capture device
+                    gray = grabber.QueryGrayFrame().Resize(320, 240, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
+
+                    //Face Detector
+                    MCvAvgComp[][] facesDetected = gray.DetectHaarCascade(
+                    face,
+                    1.2,
+                    10,
+                    Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
+                    new Size(20, 20));
+
+                    //Action for each element detected
+                    foreach (MCvAvgComp f in facesDetected[0])
+                    {
+                        TrainedFace = currentFrame.Copy(f.rect).Convert<Gray, byte>();
+                        break;
+                    }
+
+                    //resize face detected image for force to compare the same size with the 
+                    //test image with cubic interpolation type method
+                    TrainedFace = result.Resize(100, 100, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
+                    trainingImages.Add(TrainedFace);
+                    labels.Add(textBox1.Text);
+
+                    //Show face added in gray scale
+                    imageBox1.Image = TrainedFace;
+                    listPass.Add(txtPassword.Text);
+                    //Write the number of triained faces in a file text for further load
+                    File.WriteAllText(Application.StartupPath + "/TrainedFaces/TrainedLabels.txt", trainingImages.ToArray().Length.ToString() + "%");
+
+                    //Write the labels of triained faces in a file text for further load
+                    for (int i = 1; i < trainingImages.ToArray().Length + 1; i++)
+                    {
+                        trainingImages.ToArray()[i - 1].Save(Application.StartupPath + "/TrainedFaces/face" + i + ".bmp");
+                        File.AppendAllText(Application.StartupPath + "/TrainedFaces/TrainedLabels.txt", labels.ToArray()[i - 1] + "$" + listPass[i - 1] + "%");
+                    }
+
+                    MessageBox.Show(textBox1.Text + "´s face detected and added", "Training OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    name = "";
                 }
-
-                //resize face detected image for force to compare the same size with the 
-                //test image with cubic interpolation type method
-                TrainedFace = result.Resize(100, 100, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
-                trainingImages.Add(TrainedFace);
-                labels.Add(textBox1.Text);
-
-                //Show face added in gray scale
-                imageBox1.Image = TrainedFace;
-
-                //Write the number of triained faces in a file text for further load
-                File.WriteAllText(Application.StartupPath + "/TrainedFaces/TrainedLabels.txt", trainingImages.ToArray().Length.ToString() + "%");
-
-                //Write the labels of triained faces in a file text for further load
-                for (int i = 1; i < trainingImages.ToArray().Length + 1; i++)
+                catch
                 {
-                    trainingImages.ToArray()[i - 1].Save(Application.StartupPath + "/TrainedFaces/face" + i + ".bmp");
-                    File.AppendAllText(Application.StartupPath + "/TrainedFaces/TrainedLabels.txt", labels.ToArray()[i - 1] + "%");
+                    MessageBox.Show("Enable the face detection first", "Training Fail", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
-
-                MessageBox.Show(textBox1.Text + "´s face detected and added :)", "Training OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch
-            {
-                MessageBox.Show("Enable the face detection first", "Training Fail", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 
@@ -156,68 +166,64 @@ namespace MultiFaceRec
             // lấy khung hình capture, truyền vào thuật toán tích phân bật 3
             currentFrame = grabber.QueryFrame().Resize(320, 240, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
 
-                    //chuyển sang khung gray
-                    gray = currentFrame.Convert<Gray, Byte>();
+            //chuyển sang khung gray
+            gray = currentFrame.Convert<Gray, Byte>();
 
             //nhận diện khuôn mặt
             // DetectHaarCascade: xữ lý nhận diện khuôn mặt bằng khoảng cách: 2 mắt, mũi, ...
             MCvAvgComp[][] facesDetected = gray.DetectHaarCascade(
-                  face,
-                  1.2,
-                  10,
-                  Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
-                  new Size(20, 20));
+            face,
+            1.2,
+            10,
+            Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
+            new Size(20, 20));
 
             //Action for each element detected
             // facesDetected[]: lưu khuôn mặt đang có trên camera
             foreach (MCvAvgComp f in facesDetected[0])
-                    {
-                        t = t + 1;
-                        result = currentFrame.Copy(f.rect).Convert<Gray, byte>().Resize(100, 100, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
-                        //draw the face detected in the 0th (gray) channel with blue color
-                        currentFrame.Draw(f.rect, new Bgr(Color.Red), 2);
+            {
+                t = t + 1;
+                result = currentFrame.Copy(f.rect).Convert<Gray, byte>().Resize(100, 100, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
+                //draw the face detected in the 0th (gray) channel with blue color
+                currentFrame.Draw(f.rect, new Bgr(Color.Red), 2);
+                if (trainingImages.ToArray().Length != 0)
+                {
+                    //TermCriteria for face recognition with numbers of trained images like maxIteration
+                MCvTermCriteria termCrit = new MCvTermCriteria(ContTrain, 0.001);
+                //Eigen face recognizer
+                EigenObjectRecognizer recognizer = new EigenObjectRecognizer(
+                    trainingImages.ToArray(),
+                    labels.ToArray(),
+                    3000,
+                    ref termCrit);
 
+                name = recognizer.Recognize(result);
 
-                        if (trainingImages.ToArray().Length != 0)
-                        {
-                            //TermCriteria for face recognition with numbers of trained images like maxIteration
-                        MCvTermCriteria termCrit = new MCvTermCriteria(ContTrain, 0.001);
+                //Draw the label for each face detected and recognized
+                currentFrame.Draw(name, ref font, new Point(f.rect.X - 2, f.rect.Y - 2), new Bgr(Color.LightGreen));
 
-                        //Eigen face recognizer
-                        EigenObjectRecognizer recognizer = new EigenObjectRecognizer(
-                           trainingImages.ToArray(),
-                           labels.ToArray(),
-                           3000,
-                           ref termCrit);
+                }
 
-                        name = recognizer.Recognize(result);
+                NamePersons[t-1] = name;
+                NamePersons.Add("");
 
-                            //Draw the label for each face detected and recognized
-                        currentFrame.Draw(name, ref font, new Point(f.rect.X - 2, f.rect.Y - 2), new Bgr(Color.LightGreen));
-
-                        }
-
-                            NamePersons[t-1] = name;
-                            NamePersons.Add("");
-
-
-                        //Set the number of faces detected on the scene
-                        label3.Text = facesDetected[0].Length.ToString();
+                //Set the number of faces detected on the scene
+                label3.Text = facesDetected[0].Length.ToString();
                                     
-                    }
-                        t = 0;
-
-                        //Names concatenation of persons recognized
-                    for (int nnn = 0; nnn < facesDetected[0].Length; nnn++)
-                    {
-                        names = names + NamePersons[nnn] + ", ";
-                    }
-                    //Show the faces procesed and recognized
-                    imageBoxFrameGrabber.Image = currentFrame;
-                    label4.Text = names;
-                    names = "";
-                    //Clear the list(vector) of names
-                    NamePersons.Clear();
+            }
+            t = 0;
+            //Names concatenation of persons recognized
+            for (int nnn = 0; nnn < facesDetected[0].Length; nnn++)
+            {
+                names = names + NamePersons[nnn] + ", ";
+            }
+            //Show the faces procesed and recognized
+            imageBoxFrameGrabber.Image = currentFrame;
+            label4.Text = names;
+            names = "";
+            name = "";
+            //Clear the list(vector) of names
+            NamePersons.Clear();
 
         }
 

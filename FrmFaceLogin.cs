@@ -33,7 +33,8 @@ namespace MultiFaceRec
         bool isOn = false;
 
         Thread thread;
-
+        string password;
+        string myName;
         private void btnExit_Click(object sender, EventArgs e)
         {
             if (isOn)
@@ -61,7 +62,10 @@ namespace MultiFaceRec
                 {
                     LoadFaces = "face" + tf + ".bmp";
                     trainingImages.Add(new Image<Gray, byte>(Application.StartupPath + "/TrainedFaces/" + LoadFaces));
-                    labels.Add(Labels[tf]);
+                    string[] name = Labels[tf].Split('%');
+                    //password = name[1];
+                    myName = name[0];
+                    labels.Add(name[0]);
                 }
 
             }
@@ -103,70 +107,76 @@ namespace MultiFaceRec
           10,
           Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
           new Size(20, 20));
-
-            //Action for each element detected
-            foreach (MCvAvgComp f in facesDetected[0])
+            try
             {
-                t = t + 1;
-                result = currentFrame.Copy(f.rect).Convert<Gray, byte>().Resize(100, 100, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
-                //draw the face detected in the 0th (gray) channel with blue color
-                currentFrame.Draw(f.rect, new Bgr(Color.Red), 2);
-
-
-                if (trainingImages.ToArray().Length != 0)
+                //Action for each element detected
+                foreach (MCvAvgComp f in facesDetected[0])
                 {
-                    isDec = true;
-                    //TermCriteria for face recognition with numbers of trained images like maxIteration
-                    MCvTermCriteria termCrit = new MCvTermCriteria(ContTrain, 0.001);
+                    t = t + 1;
+                    result = currentFrame.Copy(f.rect).Convert<Gray, byte>().Resize(100, 100, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
+                    //draw the face detected in the 0th (gray) channel with blue color
+                    currentFrame.Draw(f.rect, new Bgr(Color.Red), 2);
 
-                    //Eigen face recognizer
-                    EigenObjectRecognizer recognizer = new EigenObjectRecognizer(
-                       trainingImages.ToArray(),
-                       labels.ToArray(),
-                       3000,
-                       ref termCrit);
 
-                    name = recognizer.Recognize(result);
+                    if (trainingImages.ToArray().Length != 0)
+                    {
+                        //TermCriteria for face recognition with numbers of trained images like maxIteration
+                        MCvTermCriteria termCrit = new MCvTermCriteria(ContTrain, 0.001);
 
-                    //Draw the label for each face detected and recognized
-                    currentFrame.Draw(name, ref font, new Point(f.rect.X - 2, f.rect.Y - 2), new Bgr(Color.LightGreen));
+                        //Eigen face recognizer
+                        EigenObjectRecognizer recognizer = new EigenObjectRecognizer(
+                           trainingImages.ToArray(),
+                           labels.ToArray(),
+                           3000,
+                           ref termCrit);
+
+                        name = recognizer.Recognize(result);
+                        string[] newName = name.Split('$');
+                        myName = newName[0];
+                        password = newName[1];
+                        if (myName != "")
+                            isDec = true;
+                        //Draw the label for each face detected and recognized
+                        currentFrame.Draw(myName, ref font, new Point(f.rect.X - 2, f.rect.Y - 2), new Bgr(Color.LightGreen));
+
+                    }
+
+                    NamePersons[t - 1] = name;
+                    NamePersons.Add("");
 
                 }
+                t = 0;
 
-                NamePersons[t - 1] = name;
-                NamePersons.Add("");
-
-            }
-            t = 0;
-
-            //Names concatenation of persons recognized
-            for (int nnn = 0; nnn < facesDetected[0].Length; nnn++)
-            {
-                names = names + NamePersons[nnn] + ", ";
-            }
-            //Show the faces procesed and recognized
-            imageBoxFrameGrabber.Image = currentFrame;
-            names = "";
-            //Clear the list(vector) of names
-            NamePersons.Clear();
-            if(isDec)
-            {
-                if (MessageBox.Show("Your face is detected", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                    == DialogResult.OK)
+                //Names concatenation of persons recognized
+                for (int nnn = 0; nnn < facesDetected[0].Length; nnn++)
                 {
-                    this.Close();
-                    grabber.Dispose();
-                    thread = new Thread(openFrmPassword);
-                    thread.SetApartmentState(ApartmentState.STA);
-                    thread.Start();
+                    names = names + NamePersons[nnn] + ", ";
+                }
+                //Show the faces procesed and recognized
+                imageBoxFrameGrabber.Image = currentFrame;
+                names = "";
+                //Clear the list(vector) of names
+                NamePersons.Clear();
+                if (isDec)
+                {
+                    if (MessageBox.Show("Your face is detected", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        == DialogResult.OK)
+                    {
+                        this.Close();
+                        grabber.Dispose();
+                        thread = new Thread(openFrmPassword);
+                        thread.SetApartmentState(ApartmentState.STA);
+                        thread.Start();
+                    }
                 }
             }
+            catch { };
 
         }
 
         private void openFrmPassword()
         {
-            Application.Run(new FrmPassword());
+            Application.Run(new FrmPassword(password, myName));
         }
     }
 }
